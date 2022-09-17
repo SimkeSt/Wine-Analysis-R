@@ -1,0 +1,325 @@
+---
+title: "Statistics Homework"
+output:
+  html_document:
+  toc: yes
+toc_float: yes
+link-citations: yes
+bibliography: bibliography.bib
+date: '2022-06-12'
+---
+
+
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readr)
+library(tidyverse)
+library(gt)
+library(ggplot2)
+library(ggcorrplot)
+library(cowplot)
+library(GGally)
+library(corrplot)
+library(psych)
+
+```
+
+
+
+### INTRODUCTION
+
+
+
+#### Here we have multiple questions: 
+* How does the data look like and its visualization
+* What variables correlate to each other 
+* Quality research
+* What other variables say about the quality
+* Main differences between two families of wines
+
+
+
+
+### How does data look like and what is its summary?
+
+Head for white wine dataset
+
+
+```{r data123, echo=FALSE}
+white <- read.csv(file = 'C:/Users/Spelcina/Desktop/winequality-white.csv',sep=";");
+
+white %>% head(5) %>% gt()
+
+```
+
+
+Head for red wine dataset
+
+
+```{r data, echo=FALSE}
+red <- read.csv(file = 'C:/Users/Spelcina/Desktop/winequality-red.csv',sep=";");
+
+red %>% head(5) %>% gt()
+
+```
+
+
+Summary for red wine
+
+```{r data2212, echo=FALSE}
+
+summary(red)
+
+```
+
+
+Summary for white wine
+
+```{r data222, echo=FALSE}
+
+summary(white)
+
+```
+
+
+
+
+
+### We want to see what variables coorelate to each other
+
+
+Correlation of variables of red wines:
+
+```{r colleges, echo=FALSE}
+
+cor(white)
+
+
+
+```
+
+Correlation of white wines
+
+```{r college1s, echo=FALSE}
+
+
+cor(red)
+
+```
+
+
+Red wine correlation matrix graph for easier visualization:
+
+
+```{r scorer1s, warning=FALSE,echo=FALSE}
+
+ggcorrplot(cor(red))
+
+
+```
+
+
+White wine correlation matrix
+
+
+```{r scorers, warning=FALSE,echo=FALSE}
+
+ggcorrplot(cor(white))
+
+
+```
+
+Here I want to plot residual sugar vs density and alcohol vs density for both wines
+
+Red sugar vs density
+
+
+```{r coqr132321, echo=FALSE}
+
+red %>% ggplot(aes(x=residual.sugar,y=density ,group=1)) + geom_point() 
+
+```
+
+White RS vs density
+
+
+```{r coqr135321, echo=FALSE}
+
+white %>% ggplot(aes(x=residual.sugar,y=density ,group=1)) + geom_point() 
+
+```
+
+
+White alcohol vs density
+
+
+```{r coqr137621, echo=FALSE}
+
+white %>% ggplot(aes(x=alcohol,y=density ,group=1)) + geom_point() 
+
+```
+
+
+And red density vs alcohol
+
+
+```{r qqq9989898, echo=FALSE}
+
+red %>% ggplot(aes(x=alcohol,y=density ,group=1)) + geom_point() 
+
+```
+
+
+### We are interested in the quality of the wine, so we want to visualize it
+
+Histogram for red wine quality
+
+```{r qqr, echo=FALSE}
+hist(red$quality) 
+
+```
+
+Histogram for white wine quality
+
+```{r qqr1, echo=FALSE}
+hist(white$quality)
+
+```
+
+
+Boxplot for red wines quality
+
+```{r cow21r, echo=FALSE}
+
+boxplot(red$quality)
+
+```
+
+Boxplot for white wines quality
+
+```{r cowr, echo=FALSE}
+
+boxplot(white$quality)
+
+```
+
+
+Red quality variance:
+
+```{r tru11,warning=FALSE,echo=FALSE}
+var(red$quality)
+
+
+```
+
+White wine variance:
+
+```{r tru111,warning=FALSE,echo=FALSE}
+var(white$quality)
+
+
+```
+
+
+We want see how alcohol and density relate to the quality for red
+
+```{r coqr, echo=FALSE}
+
+red %>% ggplot(aes(x=alcohol,y= density,group=1)) + geom_point(aes(colour = quality,size=1)) 
+
+```
+
+This wasn't as conclusive as I wished it to be
+
+
+Now we can see the same thing also for white wine
+
+```{r coqr1, echo=FALSE}
+
+white %>% ggplot(aes(x=alcohol,y= density,group=1)) + geom_point(aes(colour = quality,size=1)) 
+
+```
+Now we are comparing red wines residual sugar with volatile acidity in regard to quality
+
+```{r coqr11, echo=FALSE}
+
+red %>% ggplot(aes(x=residual.sugar,y=volatile.acidity ,group=1)) + geom_point(aes(colour = quality,size=1)) 
+
+```
+
+We can see the less acidic it is and less sugar it has the more quality it has for red wine
+
+
+We do the same thing also for white wine
+
+```{r coqr1321, echo=FALSE}
+
+white %>% ggplot(aes(x=residual.sugar,y=volatile.acidity ,group=1)) + geom_point(aes(colour = quality,size=1)) 
+
+```
+
+
+Here we dont see much significance
+
+### Mean comparisons between wines
+
+
+We want to find the wine with less residual sugar between these two wine families
+
+My hypothesis here is that they do not vary much in terms of residual sugar
+
+```{r tru,warning=FALSE,echo=FALSE}
+
+t.test(white$residual.sugar, red$residual.sugar,var.equal=TRUE)
+
+```
+
+
+Now we want to test for volatile acidity, hypothesis is that there is no significant difference
+
+```{r tru123,warning=FALSE,echo=FALSE}
+
+t.test(white$volatile.acidity, red$volatile.acidity,var.equal=TRUE)
+
+```
+
+From this test we determine that red is more acidic than the white wine which is again surprising
+
+Next variable we want to test is the density, with the same assumption
+
+```{r tru121233,warning=FALSE,echo=FALSE}
+
+t.test(white$density, red$density,var.equal=TRUE)
+
+```
+
+We again get the same results, that the true difference is still not 0. But the difference in means is not so big
+
+
+Last variable I want to test is the PH value
+```{r tru13223,warning=FALSE,echo=FALSE}
+
+t.test(white$pH, red$pH,var.equal=TRUE)
+
+```
+
+Which again is not the same, but means aren't so far apart
+
+Which gave me idea to compare all variables means from both means to truly understand the difference between wines
+
+```{r tru123323,warning=FALSE,echo=FALSE}
+
+qq<-colMeans(white)
+
+qq2<-colMeans(red)
+
+qq-qq2
+```
+
+These are the differences of means of both wine families. I know the values aren't scaled, but from looking at the data, we can conclude that the biggest difference is the total sulfur dioxide. 
+
+### Conclusion
+
+By this I want to conclude the analysis, and want to say that there are bigger differences than I expected. This can give insight when buying wine. As for statistical tools used, mostly it was pearson correlation, t-test and simple graphs and mean comparisons.
